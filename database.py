@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 
 # Kết nối MongoDB
-# MONGO_URI = "mongodb+srv://tranxuancong2023:qUJomTP0jDdHmuNV@cluster0.sfcxjee.mongodb.net/ml?retryWrites=true&w=majority"
-MONGO_URI = "mongodb://localhost:27017/"
+MONGO_URI = "mongodb+srv://tranxuancong2023:qUJomTP0jDdHmuNV@cluster0.sfcxjee.mongodb.net/ml?retryWrites=true&w=majority"
+#MONGO_URI = "mongodb://localhost:27017/"
 client = MongoClient(MONGO_URI)
 
 # Chọn database
