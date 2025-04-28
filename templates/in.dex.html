@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thư Viện Văn Học</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+
+  <body>
+    <header>
+      <h1>📖 Thư Viện Văn Học</h1>
+      <nav id="nav-buttons">
+        <button onclick="window.location.href='/login'">Đăng Nhập</button>
+        <button onclick="window.location.href='/signup'">Đăng Ký</button>
+      </nav>
+    </header>
+
+    <p class="description">
+      📚 Trang web cung cấp kiến thức văn học và giúp bạn phát triển kỹ năng
+      viết.
+    </p>
+
+    <div class="container">
+      <div class="card">
+        <a href="/lib">📖 Thư viện kiến thức</a>
+      </div>
+      <div class="card">
+        <a href="/forum">💬 Diễn đàn thảo luận</a>
+      </div>
+      <div class="card" id="minigame-card">
+        <a href="/minigame">🎮 Minigame</a>
+        <span
+          id="maintenance-text"
+          style="display: none; color: red; font-size: 14px; margin-top: 5px"
+          >(Bảo trì)</span
+        >
+      </div>
+      <div class="card">
+        <a href="/chatbot">🤖 Chatbot AI chấm bài</a>
+      </div>
+      <a href="tel:0899009018" id="call-button" title="Gọi ngay">
+        <img src="/static/images/phone_icon.png" alt="Gọi ngay" width="46" />
+      </a>
+    </div>
+
+    <footer>
+      <p>© 2024 Thư Viện Văn Học</p>
+    </footer>
+
+    <div id="chatbot-container">
+      <h2>🤖 Chatbot AI Chấm Bài</h2>
+      <form id="upload-form">
+        <input type="file" name="file" id="file-input" accept="image/*,application/pdf" required />
+        <select id="ngon-ngu" name="language">
+          <option value="vi">Tiếng Việt</option>
+          <option value="en">Tiếng Anh</option>
+        </select>
+        <button type="submit">Chấm Bài</button>
+      </form>
+      <div id="ket-qua"></div>
+    </div>
+
+    <script>
+      document.getElementById('upload-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const ketQuaDiv = document.getElementById('ket-qua');
+
+        ketQuaDiv.innerHTML = 'Đang chấm bài...';
+
+        try {
+          const response = await fetch('/cham-bai', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await response.json();
+
+          if (data.error) {
+            ketQuaDiv.innerHTML = `<p style="color: red;">Lỗi: ${data.error}</p>`;
+          } else {
+            ketQuaDiv.innerHTML = `<pre>${data.result}</pre>`; // Hiển thị kết quả dưới dạng preformatted text
+          }
+        } catch (error) {
+          ketQuaDiv.innerHTML = `<p style="color: red;">Lỗi: ${error}</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>

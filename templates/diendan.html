@@ -1,0 +1,1244 @@
+{% extends "base.html" %}
+
+{% block title %}Diễn đàn - Văn học thời đại số{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://gist.githubusercontent.com/cuclacvangsanh/059ab08aa913a5bf4aebc5313e426422/raw/a0c9ed471bc4e9abd1ceafb7837fec195fe9eeec/diendanstyle.css">
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Left Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="sidebar-fixed">
+                <div class="site-logo mb-5 ps-3">
+                    <h4 class="fw-bold">Học Văn Thời Đại Số</h4>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action instagram-nav-item">
+                        <i class="fas fa-home me-2"></i> Trang chủ
+                    </a>
+                   
+                   
+                    <a href="/messenger" class="list-group-item list-group-item-action instagram-nav-item">
+                        <i class="fas fa-paper-plane me-2"></i> Tin nhắn
+                    </a>
+                  
+                    <a href="#" class="list-group-item list-group-item-action instagram-nav-item" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                        <i class="fas fa-plus-square me-2"></i> Tạo bài viết
+                    </a>
+                    
+                </div>
+               
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <!-- Stories -->
+        
+
+            <!-- Posts Feed -->
+            <div id="posts-container">
+                <!-- Posts will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        
+    </div>
+</div>
+
+<!-- Create Post Modal -->
+<div class="modal fade" id="createPostModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo bài viết mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <textarea class="form-control" id="post-content" rows="4" placeholder="Chia sẻ suy nghĩ của bạn..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Thêm ảnh/video</label>
+                    <input type="file" class="form-control" id="post-media" accept="image/*,video/*">
+                </div>
+                <div id="media-preview" class="mb-3 d-none">
+                    <img id="preview-image" class="img-fluid rounded" style="max-height: 300px;">
+                    <button class="btn btn-sm btn-danger mt-2" onclick="removeMedia()">
+                        <i class="fas fa-times"></i> Xóa
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="createPost()">Đăng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bình luận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="comments-container" class="mb-3">
+                    <!-- Comments will be loaded here -->
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="comment-input" placeholder="Viết bình luận...">
+                    <button class="btn btn-primary" onclick="submitComment()">Gửi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Post Modal -->
+<div class="modal fade" id="editPostModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa bài viết</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-post-id">
+                <div class="mb-3">
+                    <textarea class="form-control" id="edit-post-content" rows="4" placeholder="Chia sẻ suy nghĩ của bạn..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Thay đổi ảnh/video</label>
+                    <input type="file" class="form-control" id="edit-post-media" accept="image/*,video/*">
+                </div>
+                <div id="edit-media-preview" class="mb-3">
+                    <img id="edit-preview-image" class="img-fluid rounded" style="max-height: 300px;">
+                    <button class="btn btn-sm btn-danger mt-2" onclick="removeEditMedia()">
+                        <i class="fas fa-times"></i> Xóa
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="updatePost()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal đổi tên người dùng -->
+<!-- <div class="modal fade" id="changeUsernameModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Đổi tên người dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="new-username" class="form-label">Tên mới của bạn</label>
+                    <input type="text" class="form-control" id="new-username" placeholder="Nhập tên mới...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="changeUsername()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+    <style>
+      body {
+    background-color: #fafafa;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+.sidebar-fixed {
+    position: sticky;
+    top: 20px;
+    height: calc(100vh - 40px);
+        display: flex;
+        flex-direction: column;
+}
+
+.instagram-nav-item {
+    border-radius: 8px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: #262626;
+}
+
+.instagram-nav-item:hover, .instagram-nav-item.active {
+    background-color: #f8f9fa;
+    color: #262626;
+}
+
+.instagram-nav-item i {
+    color: #262626;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item i.fa-edit {
+    color: #0095f6;
+}
+
+.dropdown-item i.fa-trash {
+    color: #ed4956;
+}
+
+.edit-success,
+.delete-success {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(38, 38, 38, 0.9);
+        color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    z-index: 1050;
+    display: none;
+}
+
+.stories-container {
+    padding: 10px;
+    scrollbar-width: none;
+}
+
+.stories-container::-webkit-scrollbar {
+    display: none;
+}
+
+.story-item {
+    text-align: center;
+}
+
+.story-circle {
+    width: 70px;
+    height: 70px;
+    padding: 2px;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    border-radius: 50%;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.story-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 3px solid #fff;
+    border-radius: 50%;
+}
+
+.post-card {
+    margin-bottom: 20px;
+        border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+    padding: 12px;
+    border-bottom: 1px solid #efefef;
+        display: flex;
+        align-items: center;
+    justify-content: space-between;
+}
+
+.post-user {
+    display: flex;
+    align-items: center;
+}
+
+.post-user img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.post-content {
+    padding: 0;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+}
+
+.post-actions {
+    padding: 12px;
+}
+
+.post-likes {
+    padding: 0 12px;
+    margin-bottom: 8px;
+}
+
+.post-caption {
+    padding: 0 12px 12px;
+}
+
+.post-time {
+    padding: 0 12px 12px;
+    color: #8e8e8e;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.comment-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #efefef;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.btn-instagram {
+    background-color: #0095f6;
+        color: white;
+        border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-weight: 600;
+}
+
+.btn-instagram:hover {
+    background-color: #0086e0;
+    color: white;
+}
+
+.like-button.active i {
+    color: #ed4956;
+    font-weight: 900;
+}
+
+/* Thêm CSS cho nút like */
+button[id^="like-button-"].active i {
+    color: #ed4956 !important;
+    font-weight: 900;
+}
+
+button[id^="like-button-"]:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+
+button[id^="like-button-"].active:hover i {
+    color: #ed4956 !important;
+}
+
+.heart-animation {
+    animation: heartBeat 0.5s;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.modal-content {
+    border-radius: 12px;
+    border: none;
+}
+
+#posts-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+@media (max-width: 991.98px) {
+    #posts-container {
+        max-width: 100%;
+        }
+      }
+    </style>
+
+    <script>
+let likedPosts = new Set();
+let nextPostId = 1;
+
+async function createPost() {
+    const content = document.getElementById('post-content').value;
+    const media = document.getElementById('post-media').files[0];
+    const user = JSON.parse(localStorage.getItem("user")); // Lấy user từ localStorage
+    const username = user ? user.username : "Anonymous"; // ✅ Lấy username từ localStorage hoặc mặc định là "Anonymous"
+
+    if (!content && !media) {
+        alert('Vui lòng nhập nội dung hoặc thêm ảnh/video');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('content', content);
+    if (media) formData.append('media', media);
+    formData.append('username', username); // ✅ Gửi username lên API
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/posts', {
+            method: 'POST',
+            body: formData
+        });
+
+        console.log("Response status:", response.status);
+        console.log("Response headers:", response.headers);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Response data:", data); // ✅ Xem JSON trả về
+
+        if (data.success) {
+            addPostToFeed(data.post);  // ✅ Hiển thị bài viết trong feed
+            alert("Bài viết đã được tạo thành công!");
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createPostModal'));
+            modal.hide();
+            
+        } else {
+            alert("Lỗi: " + data.message);
+        }
+    } catch (error) {
+        console.error('Lỗi khi tạo bài viết:', error);
+        alert('Không thể kết nối đến server!');
+    }
+}
+
+
+function addPostToFeed(post) {
+    const container = document.getElementById('posts-container');
+    const postElement = document.createElement('div');
+    postElement.className = 'card post-card';
+
+    // Kiểm tra xem bài viết đã được thích chưa (giả sử likedPosts là Set toàn cục)
+    const isLiked = likedPosts.has(post._id);
+
+    // Kiểm tra quyền sở hữu bài viết (so sánh với currentUserName toàn cục)
+    const isOwner = post.user.name === currentUserName;
+
+    postElement.innerHTML = `
+        <div class="post-header">
+            <div class="post-user">
+                <img src="${post.user.avatar || getRandomAvatar()}" alt="${post.user.name}">
+                <div>
+                    <div class="fw-bold">${post.user.name}</div>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="btn text-dark p-0" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    ${isOwner ? `
+                    <li><a class="dropdown-item" href="#" onclick="editPost('${post._id}')"><i class="fas fa-edit me-2"></i>Chỉnh sửa</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="deletePost('${post._id}')"><i class="fas fa-trash me-2"></i>Xóa</a></li>
+                    ` : `
+                    <li><a class="dropdown-item" href="#" onclick="reportPost('${post._id}')"><i class="fas fa-flag me-2"></i>Báo cáo</a></li>
+                    `}
+                </ul>
+            </div>
+        </div>
+        ${post.media_url ? `
+            <div class="post-content">
+                <img src="${post.media_url}" class="post-image">
+            </div>
+        ` : ''}
+        <div class="post-actions">
+            <div class="d-flex align-items-center mb-2">
+                <button class="btn btn-link text-dark p-0 me-3 ${isLiked ? 'active' : ''}" id="like-button-${post._id}" onclick="likePost('${post._id}')">
+                    <i class="${isLiked ? 'fas' : 'far'} fa-heart fa-lg" style="${isLiked ? 'color: #ed4956;' : ''}"></i>
+                </button>
+                <button class="btn btn-link text-dark p-0 me-3" onclick="openComments('${post._id}')">
+                    <i class="far fa-comment fa-lg"></i>
+                </button>
+                <button class="btn btn-link text-dark p-0" id="share-button-${post._id}" onclick="sharePost('${post._id}')">
+                    <i class="far fa-paper-plane fa-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div class="post-likes">
+            <div class="fw-bold"><span id="like-count-${post._id}">${post.likes || 0}</span> lượt thích</div>
+        </div>
+        <div class="post-caption">
+            <span class="fw-bold">${post.user.name}</span> ${post.content}
+        </div>
+        <div class="post-time">
+            ${post.updated_at ? post.updated_at : (post.created_at || 'Vừa xong')}
+        </div>
+    `;
+    container.insertBefore(postElement, container.firstChild);
+}
+
+// Load bài viết mới nhất
+async function loadPosts() {
+    try {
+        const response = await fetch('/api/all/posts');
+
+        if (!response.ok) {
+            throw new Error('Không thể tải bài viết mới');
+        }
+
+        const data = await response.json();
+        const container = document.getElementById('posts-container');
+        container.innerHTML = ''; // Xóa dữ liệu cũ trong bảng
+
+        // Kiểm tra nếu có bài viết
+        if (data && data.length > 0) {
+            // Dùng hàm addPostToFeed để thêm bài viết vào feed
+            data.forEach(post => {
+                addPostToFeed(post); // Gọi hàm addPostToFeed
+            });
+        } else {
+            container.innerHTML = '<div class="text-center">Chưa có bài viết nào</div>';
+        }
+
+    } catch (error) {
+        console.error('Lỗi khi tải bài viết mới:', error);
+        document.getElementById('posts-container').innerHTML = 
+            '<div class="text-center text-danger">Không thể tải bài viết mới</div>';
+    }
+}
+
+
+
+// Danh sách avatar thực tế để thay thế placeholder
+const avatarUrls = [
+    'https://randomuser.me/api/portraits/women/12.jpg',
+    'https://randomuser.me/api/portraits/men/32.jpg',
+    'https://randomuser.me/api/portraits/women/32.jpg',
+    'https://randomuser.me/api/portraits/men/22.jpg',
+    'https://randomuser.me/api/portraits/women/22.jpg',
+    'https://randomuser.me/api/portraits/men/11.jpg',
+    'https://randomuser.me/api/portraits/women/11.jpg',
+    'https://randomuser.me/api/portraits/men/1.jpg',
+    'https://randomuser.me/api/portraits/women/1.jpg',
+    'https://randomuser.me/api/portraits/men/2.jpg'
+];
+
+// Danh sách tên người dùng ngẫu nhiên
+
+
+// Biến lưu tên người dùng hiện tại
+let currentUserName = '';
+document.addEventListener("DOMContentLoaded", function () {
+    let username = localStorage.getItem("username") || "Người dùng";
+    document.getElementById("profile-username").textContent = username;
+});
+
+// Khởi tạo người dùng hiện tại khi tải trang
+function initCurrentUser() {
+    // Lấy người dùng từ localStorage nếu đã có
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUserName = savedUser;
+    } else {
+        // Nếu chưa có, tạo người dùng mới
+        currentUserName = getRandomUserName();
+        localStorage.setItem('currentUser', currentUserName);
+    }
+    
+    // Hiển thị tên người dùng trong sidebar
+    updateProfileName();
+}
+
+// Cập nhật tên người dùng hiển thị trong sidebar
+function updateProfileName() {
+    const profileLink = document.querySelector('.list-group-item img[alt="avatar"]').closest('.list-group-item');
+    if (profileLink) {
+        let username = localStorage.getItem("username") || "Người dùng";
+        // Tạo icon menu nhỏ bên cạnh tên
+        const currentHTML = profileLink.innerHTML;
+        // Thay thế toàn bộ nội dung sau avatar
+        const newContent = `<img src="https://via.placeholder.com/30" class="rounded-circle me-2" alt="avatar" style="width: 24px; height: 24px;"> 
+            <span>${username}</span>
+            <i class="fas fa-cog ms-2 text-muted" style="font-size: 12px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#changeUsernameModal"></i>`;
+        profileLink.innerHTML = newContent;
+        
+        // Replace avatar with random one
+        const avatarImg = profileLink.querySelector('img');
+        if (avatarImg && avatarImg.src.includes('placeholder')) {
+            avatarImg.src = getRandomAvatar();
+        }
+    }
+}
+
+// Đổi tên người dùng
+function changeUsername() {
+    const newUsername = document.getElementById('new-username').value.trim();
+    
+    if (!newUsername) {
+        alert('Vui lòng nhập tên mới');
+        return;
+    }
+    
+    // Lưu tên cũ để cập nhật các bài viết
+    const oldUsername = currentUserName;
+    
+    // Cập nhật tên mới
+    currentUserName = newUsername;
+    localStorage.setItem('currentUser', currentUserName);
+    
+    // Cập nhật hiển thị
+    updateProfileName();
+    
+    // Cập nhật tên trong các bài viết của người dùng
+    let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+    posts = posts.map(post => {
+        if (post.user.name === oldUsername) {
+            post.user.name = currentUserName;
+        }
+        return post;
+    });
+    localStorage.setItem('posts', JSON.stringify(posts));
+    
+    // Refresh lại feed
+    refreshPostFeed();
+    
+    // Đóng modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('changeUsernameModal'));
+    modal.hide();
+    
+    // Reset form
+    document.getElementById('new-username').value = '';
+    
+    // Thông báo thành công
+    showUsernameChangeSuccess();
+}
+
+function showUsernameChangeSuccess() {
+    // Tạo phần tử thông báo nếu chưa tồn tại
+    let notification = document.querySelector('.username-change-success');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'username-change-success';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(38, 38, 38, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            z-index: 1050;
+        `;
+        notification.innerHTML = '<i class="fas fa-check-circle me-2"></i>Tên người dùng đã được cập nhật';
+        document.body.appendChild(notification);
+    }
+    
+    // Hiển thị thông báo
+    notification.style.display = 'block';
+    
+    // Ẩn thông báo sau 3 giây
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+// Danh sách các tên người nổi tiếng về văn học
+const famousAuthors = [
+    'Nhà văn Nguyễn Nhật Ánh',
+    'Nhà thơ Xuân Quỳnh',
+    'Nhà văn Nam Cao',
+    'Nhà thơ Xuân Diệu',
+    'Nhà văn Nguyễn Ngọc Tư',
+    'Nhà thơ Tố Hữu',
+    'Nhà văn Tô Hoài',
+    'Nhà thơ Huy Cận',
+    'Nhà văn Vũ Trọng Phụng',
+    'Nhà thơ Chế Lan Viên'
+];
+
+// Danh sách các lý do gợi ý
+const suggestionReasons = [
+    'Mới tham gia',
+    'Theo dõi bởi bạn bè',
+    'Phổ biến trong tuần này',
+    'Được đề xuất cho bạn',
+    'Cùng sở thích với bạn',
+    'Hoạt động tích cực',
+    'Người dùng mới nổi',
+    'Có nội dung tương tự',
+    'Người theo dõi bạn',
+    'Bạn có thể biết'
+];
+
+// Lấy avatar ngẫu nhiên từ danh sách
+function getRandomAvatar() {
+    const randomIndex = Math.floor(Math.random() * avatarUrls.length);
+    return avatarUrls[randomIndex];
+}
+
+// Lấy tên người dùng ngẫu nhiên từ danh sách
+
+
+// Lấy tên tác giả ngẫu nhiên từ danh sách
+function getRandomAuthor() {
+    const randomIndex = Math.floor(Math.random() * famousAuthors.length);
+    return famousAuthors[randomIndex];
+}
+
+// Lấy lý do gợi ý ngẫu nhiên
+function getRandomSuggestionReason() {
+    const randomIndex = Math.floor(Math.random() * suggestionReasons.length);
+    return suggestionReasons[randomIndex];
+}
+function getRandomUserName() {
+    const user = localStorage.getItem('user');
+	console.log("🔹 Dữ liệu trong localStorage:", localStorage.getItem('user'));
+    return user ? JSON.parse(user) : null;
+}
+// Thay thế placeholder avatar trong trang
+function replacePlaceholderAvatars() {
+    const avatarImgs = document.querySelectorAll('img[src*="placeholder.com"]');
+    avatarImgs.forEach(img => {
+        if (img.src.includes('placeholder')) {
+            img.src = getRandomAvatar();
+        }
+    });
+    
+    // Thay thế tất cả các phần tử có nội dung "Tên người dùng"
+    document.querySelectorAll('.story-item small').forEach(el => {
+        el.textContent = getRandomUserName();
+    });
+    
+    // Thay thế tên người dùng trong phần suggestions
+    const suggestionsNames = document.querySelectorAll('.suggestions-list .fw-bold');
+    suggestionsNames.forEach(el => {
+        el.textContent = getRandomUserName();
+    });
+    
+    // Thay thế lý do gợi ý trong phần suggestions
+    document.querySelectorAll('.suggestions-list small.text-muted').forEach(el => {
+        el.textContent = getRandomSuggestionReason();
+    });
+    
+    // Thay thế tên người dùng trong header
+    const headerUsername = document.querySelector('.card-body h6.mb-0');
+    if (headerUsername && headerUsername.textContent === 'Tên người dùng') {
+        headerUsername.textContent = getRandomUserName();
+    }
+    
+    // Thay đổi username
+    const smallUsername = document.querySelector('.card-body small.text-muted');
+    if (smallUsername && smallUsername.textContent === '@username') {
+        const name = getRandomUserName();
+        smallUsername.textContent = '@' + name.toLowerCase().replace(/\s+/g, '_').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+}
+
+// Load liked posts from localStorage
+function initializeLikedPosts() {
+    const savedLikedPosts = localStorage.getItem('likedPosts');
+    if (savedLikedPosts) {
+        likedPosts = new Set(JSON.parse(savedLikedPosts));
+    }
+}
+
+// Save liked posts to localStorage
+function saveLikedPosts() {
+    localStorage.setItem('likedPosts', JSON.stringify([...likedPosts]));
+}
+
+
+
+	
+
+
+
+function previewMedia() {
+    const file = document.getElementById('post-media').files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-image').src = e.target.result;
+            document.getElementById('media-preview').classList.remove('d-none');
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeMedia() {
+    document.getElementById('post-media').value = '';
+    document.getElementById('media-preview').classList.add('d-none');
+}
+
+async function likePost(postId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/forum/posts-like/${postId}`, {
+            method: 'POST'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Không thể thực hiện thao tác thích');
+        }
+        
+        const data = await response.json();
+        const button = document.querySelector(`#like-button-${postId}`);
+        const count = document.querySelector(`#like-count-${postId}`);
+        const heartIcon = button.querySelector('i');
+        
+        if (likedPosts.has(postId)) {
+            // Bỏ thích
+            likedPosts.delete(postId);
+            button.classList.remove('active');
+            heartIcon.className = 'far fa-heart fa-lg';
+        } else {
+            // Thích
+            likedPosts.add(postId);
+            button.classList.add('active');
+            heartIcon.className = 'fas fa-heart fa-lg';
+            
+            // Thêm hiệu ứng đập cho tim
+            heartIcon.classList.add('heart-animation');
+            setTimeout(() => {
+                heartIcon.classList.remove('heart-animation');
+            }, 600);
+        }
+        
+        count.textContent = data.likes;  // Cập nhật số lượng likes từ API
+        saveLikedPosts();
+    } catch (error) {
+        console.error('Lỗi khi thực hiện thao tác thích:', error);
+        alert('Không thể thực hiện thao tác thích. Vui lòng thử lại sau.');
+    }
+}
+
+
+function sharePost(postId) {
+    const button = document.querySelector(`#share-button-${postId}`);
+    
+    // Chỉ hiển thị hiệu ứng chia sẻ
+    button.classList.add('active');
+    setTimeout(() => button.classList.remove('active'), 1000);
+    
+    // Tạo nội dung để chia sẻ
+    let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const post = posts.find(p => p.id == postId);
+    
+    if (post) {
+        alert(`Đã sao chép liên kết đến bài viết của ${post.user.name}!`);
+    }
+}
+
+async function loadComments(postId) {
+    try {
+        const response = await fetch(`/forum/posts-comments/${postId}`);
+        if (!response.ok) {
+            throw new Error('Không thể tải bình luận');
+        }
+        
+        const post = await response.json();
+        const container = document.getElementById('comments-container');
+        container.innerHTML = '';
+        
+        
+        console.log("Bình luận của bài viết:", post); // log bình luận để kiểm tra
+        if (post.comments && post.comments.length > 0) {
+            post.comments.forEach(comment => {
+                // log comment để kiểm tra
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment-item';
+                commentElement.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <img src="${getRandomAvatar()}" class="rounded-circle me-2" width="32" height="32">
+                        <div>
+                            <div class="fw-bold">${comment.author}</div>
+                            <div>${comment.content}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(commentElement);
+            });
+        } else {
+            container.innerHTML = '<p class="text-center p-3">Chưa có bình luận nào.</p>';
+        }
+    } catch (error) {
+        console.error('Lỗi khi tải bình luận:', error);
+        document.getElementById('comments-container').innerHTML = '<p class="text-center p-3 text-danger">Không thể tải bình luận. Vui lòng thử lại sau.</p>';
+    }
+}
+
+async function submitComment() {
+    const content = document.getElementById('comment-input').value;
+
+    if (!content) {
+        alert('Vui lòng nhập nội dung bình luận');
+        return;
+    }
+
+    // Gửi bình luận đến server
+    try {
+        const response = await fetch(`/forum/posts-comments-add/${window.currentPostId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: content,
+                author: localStorage.getItem("username") || "Người dùng"
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Không thể thêm bình luận');
+        }
+
+        const data = await response.json();
+        addCommentToPost(data.comment);
+        document.getElementById('comment-input').value = ''; // Reset input
+    } catch (error) {
+        console.error('Lỗi khi thêm bình luận:', error);
+        alert('Không thể thêm bình luận. Vui lòng thử lại sau.');
+    }
+}
+
+
+async function openComments(postId) {
+    // Lưu ID của bài viết hiện tại vào biến toàn cục
+    window.currentPostId = postId;
+
+    // Mở modal
+    const modal = new bootstrap.Modal(document.getElementById('commentModal'));
+    modal.show();
+
+    // Tải bình luận cho bài viết này
+    await loadComments(postId);
+}
+
+let currentPostId;  // Make sure to assign the currentPostId when opening the modal for a specific post
+
+	
+
+
+function addCommentToPost(comment) {
+    const commentsContainer = document.getElementById('comments-container');
+    
+    const commentElement = document.createElement('div');
+    commentElement.className = 'comment';
+    commentElement.innerHTML = `
+        <p><strong>${comment.author}:</strong> ${comment.content}</p>
+    `;
+
+    commentsContainer.appendChild(commentElement);
+}
+
+
+function savePost(postId) {
+    alert('Đã lưu bài viết!');
+}
+
+
+
+
+// Load posts when page loads
+document.addEventListener('DOMContentLoaded', loadPosts);
+
+// Preview media when file is selected
+document.getElementById('post-media').addEventListener('change', previewMedia);
+
+function editPost(postId) {
+    // Tìm post cần chỉnh sửa
+    let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const post = posts.find(p => p.id == postId);
+    
+    if (post) {
+        // Hiển thị modal chỉnh sửa
+        document.getElementById('edit-post-id').value = postId;
+        document.getElementById('edit-post-content').value = post.content || '';
+        
+        // Hiển thị ảnh hiện tại nếu có
+        const previewContainer = document.getElementById('edit-media-preview');
+        const previewImage = document.getElementById('edit-preview-image');
+        
+        if (post.media) {
+            previewImage.src = post.media;
+            previewContainer.classList.remove('d-none');
+        } else {
+            previewContainer.classList.add('d-none');
+        }
+        
+        // Hiển thị modal
+        const modal = new bootstrap.Modal(document.getElementById('editPostModal'));
+        modal.show();
+    }
+}
+
+function removeEditMedia() {
+    document.getElementById('edit-post-media').value = '';
+    document.getElementById('edit-media-preview').classList.add('d-none');
+    document.getElementById('edit-preview-image').src = '';
+}
+
+function updatePost() {
+    const postId = document.getElementById('edit-post-id').value;
+    const content = document.getElementById('edit-post-content').value;
+    const media = document.getElementById('edit-post-media').files[0];
+    
+    if (!content && !media) {
+        alert('Vui lòng nhập nội dung hoặc thêm ảnh/video');
+        return;
+    }
+    
+    // Lấy danh sách posts từ localStorage
+    let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+    
+    // Tìm post cần cập nhật
+    const postIndex = posts.findIndex(post => post.id == postId);
+    
+    if (postIndex !== -1) {
+        if (media) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const mediaUrl = e.target.result;
+                
+                // Cập nhật post
+                posts[postIndex].content = content;
+                posts[postIndex].media = mediaUrl;
+                posts[postIndex].updated_at = 'Vừa cập nhật';
+                
+                // Lưu lại vào localStorage
+                localStorage.setItem('posts', JSON.stringify(posts));
+                
+                // Đóng modal và refresh trang để hiển thị thay đổi
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editPostModal'));
+                modal.hide();
+                
+                // Hiển thị thông báo thành công
+                showEditSuccess();
+                
+                // Reload posts
+                refreshPostFeed();
+            };
+            reader.readAsDataURL(media);
+        } else {
+            // Lấy media hiện tại nếu không có media mới
+            const currentMedia = posts[postIndex].media;
+            
+            // Cập nhật post
+            posts[postIndex].content = content;
+            
+            // Giữ nguyên media cũ nếu không có file mới và không xóa
+            if (document.getElementById('edit-media-preview').classList.contains('d-none')) {
+                posts[postIndex].media = null;
+            } else {
+                posts[postIndex].media = currentMedia;
+            }
+            
+            posts[postIndex].updated_at = 'Vừa cập nhật';
+            
+            // Lưu lại vào localStorage
+            localStorage.setItem('posts', JSON.stringify(posts));
+            
+            // Đóng modal và refresh trang để hiển thị thay đổi
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editPostModal'));
+            modal.hide();
+            
+            // Hiển thị thông báo thành công
+            showEditSuccess();
+            
+            // Reload posts
+            refreshPostFeed();
+        }
+    }
+}
+
+function showEditSuccess() {
+    // Tạo phần tử thông báo nếu chưa tồn tại
+    let notification = document.querySelector('.edit-success');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'edit-success';
+        notification.innerHTML = '<i class="fas fa-check-circle me-2"></i>Bài viết đã được cập nhật';
+        document.body.appendChild(notification);
+    }
+    
+    // Hiển thị thông báo
+    notification.style.display = 'block';
+    
+    // Ẩn thông báo sau 3 giây
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+function showDeleteSuccess() {
+    // Tạo phần tử thông báo nếu chưa tồn tại
+    let notification = document.querySelector('.delete-success');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'delete-success';
+        notification.innerHTML = '<i class="fas fa-trash me-2"></i>Bài viết đã được xóa';
+        document.body.appendChild(notification);
+    }
+    
+    // Hiển thị thông báo
+    notification.style.display = 'block';
+    
+    // Ẩn thông báo sau 3 giây
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+async function deletePost(postId) {
+    if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/forum/posts/${postId}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) {
+                throw new Error('Không thể xóa bài viết');
+            }
+            
+            // Nếu post đã được thích, xóa khỏi danh sách liked posts
+            if (likedPosts.has(parseInt(postId))) {
+                likedPosts.delete(parseInt(postId));
+                saveLikedPosts();
+            }
+            
+            // Hiển thị thông báo thành công
+            showDeleteSuccess();
+            
+            // Reload posts
+            refreshPostFeed();
+        } catch (error) {
+            console.error('Lỗi khi xóa bài viết:', error);
+            alert('Không thể xóa bài viết. Vui lòng thử lại sau.');
+        }
+    }
+}
+
+function refreshPostFeed() {
+    // Xóa tất cả posts hiện tại
+    const container = document.getElementById('posts-container');
+    container.innerHTML = '';
+    
+    // Load lại posts
+    loadPosts();
+}
+
+// Preview media khi chọn file trong edit modal
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('edit-post-media')) {
+        document.getElementById('edit-post-media').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('edit-preview-image').src = e.target.result;
+                    document.getElementById('edit-media-preview').classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+async function reportPost(postId) {
+    try {
+        if (confirm('Bạn có chắc chắn muốn báo cáo bài viết này không?')) {
+            const response = await fetch(`/forum/report-post/${postId}`, {
+                method: 'POST'
+            });
+            
+            if (!response.ok) {
+                throw new Error('Không thể báo cáo bài viết');
+            }
+            
+            const data = await response.json();
+            
+            // Hiển thị thông báo thành công
+            showReportSuccess();
+        }
+    } catch (error) {
+        console.error('Lỗi khi báo cáo bài viết:', error);
+        alert('Không thể báo cáo bài viết. Vui lòng thử lại sau.');
+    }
+}
+
+function showReportSuccess() {
+    // Tạo phần tử thông báo nếu chưa tồn tại
+    let notification = document.querySelector('.report-success');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'report-success';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(38, 38, 38, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            z-index: 1050;
+        `;
+        notification.innerHTML = '<i class="fas fa-flag me-2"></i>Cảm ơn bạn đã báo cáo bài viết này. Chúng tôi sẽ xem xét và xử lý sớm nhất có thể.';
+        document.body.appendChild(notification);
+    }
+    
+    // Hiển thị thông báo
+    notification.style.display = 'block';
+    
+    // Ẩn thông báo sau 3 giây
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+// Preview media khi chọn file
+document.getElementById('post-media').addEventListener('change', previewMedia);
+
+// Preview media khi chọn file trong edit modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Khởi tạo người dùng hiện tại
+    initCurrentUser();
+    
+    // Load posts
+    loadPosts();
+    
+    // Thêm các event listeners
+    if (document.getElementById('post-media')) {
+        document.getElementById('post-media').addEventListener('change', previewMedia);
+    }
+    
+    if (document.getElementById('edit-post-media')) {
+        document.getElementById('edit-post-media').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('edit-preview-image').src = e.target.result;
+                    document.getElementById('edit-media-preview').classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+    </script>
+{% endblock %}

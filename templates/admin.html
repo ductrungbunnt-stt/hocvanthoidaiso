@@ -1,0 +1,650 @@
+{% extends "base.html" %}
+
+{% block title %}Quản trị hệ thống - Văn học thời đại số{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="fas fa-user-shield me-2"></i>Quản trị hệ thống
+                    </h5>
+                    <div class="list-group list-group-flush">
+                        <a href="/admin" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-tachometer-alt me-2"></i> Tổng quan
+                        </a>
+                        <a href="/admin/forum" class="list-group-item list-group-item-action">
+                            <i class="fas fa-comments me-2"></i> Quản lý diễn đàn
+                        </a>
+                        <a href="/admin/users" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users me-2"></i> Quản lý người dùng
+                        </a>
+                        <a href="/admin/reportPost" class="list-group-item list-group-item-action">
+                            <i class="fas fa-robot me-2"></i> Quản lý báo cáo bài viết
+                        </a>
+                        <a href="/admin/manageApikey" class="list-group-item list-group-item-action">
+                            <i class="fas fa-robot me-2"></i> Quản lý apikey Gemini
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Thống kê tổng quan -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-gradient-primary text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0">Tổng số người dùng</h6>
+                                    <h2 class="mt-2 mb-0" id="total-users">0</h2>
+                                </div>
+                                <div class="icon-box">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-gradient-success text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0">Bài viết mới</h6>
+                                    <h2 class="mt-2 mb-0" id="total-posts">0</h2>
+                                </div>
+                                <div class="icon-box">
+                                    <i class="fas fa-file-alt fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-gradient-info text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0">Bình luận mới</h6>
+                                    <h2 class="mt-2 mb-0" id="total-comments">0</h2>
+                                </div>
+                                <div class="icon-box">
+                                    <i class="fas fa-comments fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-gradient-warning text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-0">Tin nhắn mới</h6>
+                                    <h2 class="mt-2 mb-0" id="total-messages">0</h2>
+                                </div>
+                                <div class="icon-box">
+                                    <i class="fas fa-envelope fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bài viết mới nhất -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="fas fa-file-alt me-2"></i>Bài viết mới nhất
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Nội dung</th>
+            <th>Tác giả</th>
+            <th>Lượt thích</th>
+            <th>Số bình luận</th>
+            <th>Ngày đăng</th>
+            <th>Ngày cập nhật</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody id="recent-posts">
+        <!-- Recent posts will be loaded here -->
+    </tbody>
+</table>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bình luận mới nhất -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="fas fa-comments me-2"></i>Bình luận mới nhất
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nội dung</th>
+                                    <th>Người bình luận</th>
+                                    <th>Bài viết</th>
+                                    <th>Ngày bình luận</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-comments">
+                                <!-- Recent comments will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Viewing Comment -->
+<div id="commentModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết bình luận</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeCommentModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Nội dung:</strong> <span id="commentContent"></span></p>
+                <p><strong>Người bình luận:</strong> <span id="commentAuthor"></span></p>
+                <p><strong>Bài viết:</strong> <span id="commentPostTitle"></span></p>
+                <p><strong>Ngày bình luận:</strong> <span id="commentDate"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCommentModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Viewing Post -->
+<div id="postModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết bài viết</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closePostModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Nội dung:</strong> <span id="postContent"></span></p>
+                <p><strong>Người đăng:</strong> <span id="postAuthor"></span></p>
+                <p><strong>Ngày đăng:</strong> <span id="postDate"></span></p>
+                <p><strong>Lượt thích:</strong> <span id="postLikes"></span></p>
+                <img id="postImage" src="" alt="" style="max-width: 100%; border-radius: 5px; margin-bottom: 10px;">
+                <h5>Bình luận:</h5>
+                <ul id="postComments" style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto;"></ul>
+                <!-- <ul id="postComments" style="list-style: none; padding: 0;"></ul> -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closePostModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Gradient backgrounds */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df, #224abe);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #1cc88a, #169b6b);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #36b9cc, #258391);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(45deg, #f6c23e, #dda20a);
+}
+
+/* Icon box */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+}
+
+/* Card styles */
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Table styles */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    background-color: #f8f9fc;
+    font-weight: 600;
+    color: #4e73df;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Button styles */
+.btn {
+    border-radius: 5px;
+    padding: 0.375rem 0.75rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-primary:hover {
+    background-color: #224abe;
+    border-color: #224abe;
+}
+
+/* List group styles */
+.list-group-item {
+    border: none;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0.25rem;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fc;
+}
+
+.list-group-item.active {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    /* display: flex; */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.modal-dialog {
+    max-width: 500px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+ 
+// Kiểm tra quyền admin
+document.addEventListener('DOMContentLoaded', function () {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user || user.level !== 'admin') {
+        window.location.href = '/login';  // Đây là chỗ có thể đang redirect sai
+    }
+	   // Load thống kê
+    loadStatistics();
+    loadRecentPosts();
+    loadRecentComments();
+});
+
+async function loadStatistics() {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        alert("Bạn chưa đăng nhập!");
+        window.location.href = "/login";
+        return;
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/admin/forum/statistics', {
+            method: 'GET',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Lỗi: ${response.status} - ${response.statusText}`);
+        }
+
+        const stats = await response.json();
+        console.log("📊 Thống kê diễn đàn:", stats);
+
+        // Hiển thị thống kê lên giao diện, kiểm tra null trước khi gán
+        document.getElementById('total-users').innerText = stats.total_users ?? 0;
+        document.getElementById('total-posts').innerText = stats.total_posts ?? 0;
+        document.getElementById('total-comments').innerText = stats.total_comments ?? 0;
+        document.getElementById('total-messages').innerText = stats.total_messages ?? 0;
+
+    } catch (error) {
+        console.error("❌ Lỗi khi tải thống kê:", error);
+        alert("Không thể tải thống kê diễn đàn!");
+    }
+}
+
+
+
+async function loadRecentPosts() {
+    try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error("Chưa đăng nhập hoặc token không tồn tại.");
+            return;
+        }
+
+        const response = await fetch("http://127.0.0.1:8000/api/admin/posts/recent", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Không thể tải bài viết mới");
+        }
+
+        const data = await response.json();
+        const container = document.getElementById("recent-posts");
+
+        if (!container) {
+            console.error("Không tìm thấy phần tử 'recent-posts'");
+            return;
+        }
+
+        container.innerHTML = "";
+
+        if (data.posts && data.posts.length > 0) {
+            data.posts.forEach(post => {
+                const createdAt = post.created_at ? new Date(post.created_at).toLocaleDateString() : "Không rõ";
+                const updatedAt = post.updated_at ? new Date(post.updated_at).toLocaleDateString() : "Chưa cập nhật";
+
+                const row = `
+                    <tr>
+                        <td><img src="${post.media_url}" alt="Media" width="50" height="50" class="post-media" /></td>
+                        <td>${post.content}</td>
+                        <td> ${post.user.name}</td>
+                        <td>${post.likes}</td>
+                        <td>${post.comments.length}</td>
+                        <td>${createdAt}</td>
+                        <td>${updatedAt}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary me-1" onclick="viewPost('${post._id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deletePost('${post._id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                container.insertAdjacentHTML("beforeend", row);
+            });
+        } else {
+            container.innerHTML = `<tr><td colspan="7" class="text-center">Không có bài viết nào</td></tr>`;
+        }
+
+    } catch (error) {
+        console.error("❌ Lỗi khi tải bài viết mới:", error);
+        const container = document.getElementById("recent-posts");
+        if (container) {
+            container.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Không thể tải bài viết mới</td></tr>`;
+        }
+    }
+}
+
+
+// Hàm định dạng ngày tháng
+function formatDate(dateString) {
+    if (!dateString) return 'Không xác định';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Load bình luận mới nhất
+async function loadRecentComments() {
+    try {
+        const token = localStorage.getItem('token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        const response = await fetch('/api/admin/comments/recent', {
+            method: 'GET',
+            headers: headers
+        });
+        
+        if (!response.ok) {
+            throw new Error('Không thể tải bình luận mới');
+        }
+        
+        const data = await response.json();
+        const container = document.getElementById('recent-comments');
+        container.innerHTML = '';
+        
+        if (data.comments && data.comments.length > 0) {
+            data.comments.forEach(comment => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${comment.content}</td>
+                    <td>${comment.author}</td>
+                    <td>${comment.post_title}</td>
+                    <td>${new Date(comment.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1" onclick="viewComment('${comment.content}, ${comment.author}, ${comment.post_title}, ${new Date(comment.created_at).toLocaleDateString()}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteComment('${comment._id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+        } else {
+            container.innerHTML = '<tr><td colspan="5" class="text-center">Không có bình luận nào</td></tr>';
+        }
+        
+    } catch (error) {
+        console.error('Lỗi khi tải bình luận mới:', error);
+        document.getElementById('recent-comments').innerHTML = 
+            '<tr><td colspan="5" class="text-center text-danger">Không thể tải bình luận mới</td></tr>';
+    }
+}
+
+
+function viewComment(text) {
+    // Fetch comment details from the server
+    const data = text.split(',');
+    // console.log("Comment details:", data);
+    
+    if (data.length === 4) {
+        // Populate the modal with comment details
+        document.getElementById('commentContent').innerText = data[0];
+        document.getElementById('commentAuthor').innerText = data[1];  
+        document.getElementById('commentPostTitle').innerText = data[2];
+        document.getElementById('commentDate').innerText = data[3];
+        document.getElementById('commentModal').style.display = 'flex';
+    } else {
+        alert('Không thể tải chi tiết bình luận');
+    }
+       
+}
+
+function viewPost(postId) {
+    // Fetch post details from the server
+    fetch(`/forum/posts/${postId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                // Populate the modal with post details
+                document.getElementById('postContent').innerText = data.content;
+                document.getElementById('postAuthor').innerText = data.user.name;
+                document.getElementById('postDate').innerText = new Date(data.created_at).toLocaleDateString();
+                document.getElementById('postLikes').innerText = data.likes;
+                document.getElementById('postImage').src = data.media_url.startsWith('/') ? `http://localhost:8000${data.media_url}` : data.media_url;
+
+                // Populate the comments
+                const commentsContainer = document.getElementById('postComments');
+                commentsContainer.innerHTML = '';
+                if (data.comments && data.comments.length > 0) {
+                    data.comments.forEach(comment => {
+                        const commentItem = document.createElement('li');
+                        commentItem.style.borderBottom = '1px solid #ddd';
+                        commentItem.style.padding = '5px 0';
+                        commentItem.innerHTML = `
+                            <p><strong>${comment.author}</strong>: ${comment.content}</p>
+                            <p style="font-size: 0.9em; color: gray;">Ngày: ${new Date(comment.created_at).toLocaleDateString()}</p>
+                        `;
+                        commentsContainer.appendChild(commentItem);
+                    });
+                } else {
+                    commentsContainer.innerHTML = '<li>Không có bình luận nào</li>';
+                }
+
+                // Show the modal
+                document.getElementById('postModal').style.display = 'flex';
+            } else {
+                alert('Không thể tải chi tiết bài viết');
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi tải chi tiết bài viết:', error);
+            alert('Không thể tải chi tiết bài viết');
+        });
+}
+
+function closePostModal() {
+    document.getElementById('postModal').style.display = 'none';
+}
+
+function closeCommentModal() {
+    document.getElementById('commentModal').style.display = 'none';
+}
+
+//    // Các hàm xử lý thao tác
+//    function viewPost(postId) {
+//     window.location.href = `forum/posts/${postId}`;
+// }  
+
+function deletePost(postId) {
+    if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+        // Gọi API xóa bài viết
+        fetch(`/api/admin/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Username': localStorage.getItem('username')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Xóa bài viết thành công');
+                loadRecentPosts();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Không thể xóa bài viết');
+        });
+    }
+}
+
+function deleteComment(commentId) {
+    if (confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
+        // Gọi API xóa bình luận
+        fetch(`/api/admin/comments/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Username': localStorage.getItem('username')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Xóa bình luận thành công');
+                loadRecentComments();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Không thể xóa bình luận');
+        });
+    }
+}
+</script>
+{% endblock %}
