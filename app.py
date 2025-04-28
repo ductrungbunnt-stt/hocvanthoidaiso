@@ -40,8 +40,8 @@ CORS(app)
 
 # Kết nối MongoDB
 try:
-    # url = "mongodb+srv://tranxuancong2023:qUJomTP0jDdHmuNV@cluster0.sfcxjee.mongodb.net/ml?retryWrites=true&w=majority"
-    url = "mongodb://localhost:27017/"
+    url = "mongodb+srv://tranxuancong2023:qUJomTP0jDdHmuNV@cluster0.sfcxjee.mongodb.net/ml?retryWrites=true&w=majority"
+    #url = "mongodb://localhost:27017/"
     client = MongoClient(url)
     # db = client.get_database()  # Automatically selects the default database from the connection string
 
