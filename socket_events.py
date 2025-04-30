@@ -1,8 +1,8 @@
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_jwt_extended import decode_token
 from datetime import datetime
-#from models.message import MessageModel
-#from models.users import UserModel  # Ensure UserModel has a method to get user roles
+from models.message import MessageModel
+from models.users import UserModel  # Ensure UserModel has a method to get user roles
 
 socketio = SocketIO(cors_allowed_origins="*")
 

@@ -21,15 +21,15 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from socket_events import init_socketio, socketio
 from config import config
-#from routes.auth_routes import auth_bp
-#from routes.library_routes import library_bp
-#from routes.forum_routes import forum_bp
-#from routes.comment_routes import comment_bp
-#from routes.exam_routes import exam_bp
-#from routes.message_routes import mess_bp
-#from routes.minigame_routes import minigame_bp
-#from models.user import UserModel
-#from models.comment import CommentModel
+from routes.auth_routes import auth_bp
+from routes.library_routes import library_bp
+from routes.forum_routes import forum_bp
+from routes.comment_routes import comment_bp
+from routes.exam_routes import exam_bp
+from routes.message_routes import mess_bp
+from routes.minigame_routes import minigame_bp
+from models.user import UserModel
+from models.comment import CommentModel
 
 # Khởi tạo Flask app
 app = Flask(__name__)
